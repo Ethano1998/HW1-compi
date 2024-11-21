@@ -8,6 +8,7 @@
 %option noyywrap
 
 %x STRING
+%x BACKSLASH
 
 %%
 void           {return VOID; }
@@ -39,8 +40,11 @@ continue      {return CONTINUE;}
 \/\/[^\n\r\t]*           {return COMMENT; }
 [a-zA-Z][a-zA-Z0-9]*     {return ID; }
 
-<STRING>\"
-
+\"          {BEGIN(STRING);}
+\\          {BEGIN(BACKSLASH);}
+<STRING>\"  {BEGIN(INITIAL);}
+<BACKSLASH>[nrt0\"\\]|x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STRING); return NUM;}
+<BACKSLASH>.+    {return UNDEFINED;}      
 [ \n\t\r]               { }
 
 %%

@@ -42,6 +42,15 @@ void output::printToken(int lineno, enum tokentype token, const char *value) {
     }
 }
 
+void checkerror(enum tokentype token,const char *value){
+    if (token == UNKNOWN )
+        output::errorUnknownChar(value[0]);
+    else if(token == UNCLOSED) 
+        output::errorUnclosedString();
+    else if(token == UNDEFINED)
+        output::errorUndefinedEscape(value);
+}
+
 void output::errorUnknownChar(char c) {
     std::cout << "ERROR: Unknown character " << c << std::endl;
     exit(0);
