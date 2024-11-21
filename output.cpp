@@ -41,7 +41,7 @@ void output::printToken(int lineno, enum tokentype token, const char *value) {
         std::cout << lineno << " COMMENT //" << std::endl;
     } else if (token == STRING) {
         std::cout << lineno << " " << token_names[token] << " " << my_string << std::endl;
-        free(my_string);
+        freeString();
     } else {
         std::cout << lineno << " " << token_names[token] << " " << value << std::endl;
     }
@@ -69,5 +69,6 @@ void allocString()
 
 void freeString()
 {
+    my_string[0] = '\0';
     free(my_string);
 }

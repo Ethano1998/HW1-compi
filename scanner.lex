@@ -9,7 +9,7 @@
 %option yylineno
 %option noyywrap
 
-%x STRING
+%x STR
 %x BACKSLASH
 
 %%
@@ -44,13 +44,13 @@ continue      {return CONTINUE;}
 
 
 \"                    {allocString();
-                        BEGIN(STRING);  }
-<STRING>[^\\\n\r\"]*     {strcat(my_string, yytext);}
-<STRING>\\          {BEGIN(BACKSLASH);  }
-<STRING><<EOF>>       { freeString();
+                        BEGIN(STR);  }
+<STR>[^\\\n\r\"]*     {strcat(my_string, yytext);}
+<STR>\\          {BEGIN(BACKSLASH);  }
+<STR><<EOF>>       { freeString();
                     printf("End of file reached\n"); }
-<STRING>\"             {return STRING;
-                        BEGIN(INITIAL);}
+<STR>\"             {BEGIN(INITIAL);
+                        return STRING;}
 
 [ \n\t\r]               { }
 
