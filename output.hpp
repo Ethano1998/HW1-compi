@@ -2,6 +2,7 @@
 #define OUTPUT_HPP
 
 #include "tokens.hpp"
+extern char* my_string;
 
 
 void checkerror(enum tokentype token,const char *value);
@@ -19,5 +20,9 @@ namespace output {
 
     void errorUndefinedEscape(const char* sequence);
 }
+
+void allocString();
+    
+void freeString();
 
 #endif //OUTPUT_HPP
