@@ -45,14 +45,14 @@ continue      {return CONTINUE;}
 
 \"                    {allocString();
                         BEGIN(STR);  }
-<STR>[^\\\n\r\"]*     {strcat(my_string, yytext);}
-<STR>\\          {BEGIN(BACKSLASH);  }
+<STR>[^\n\r\"]*     {strcat(my_string, yytext);}
+<STR>\\          {BEGIN(BACKSLASH);strcat(my_string, yytext);}
 <STR><<EOF>>       { freeString();
                         return UNCLOSED; }
 <STR>\"             {BEGIN(INITIAL);
                         return STRING;}
 <STR>[\n\r]             {return UNCLOSED;}
-<BACKSLASH>[nrt0\"\\]|x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STR); return NUM;}
+<BACKSLASH>[nrt0\"\\]|x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STR); strcat(my_string, yytext);}
 <BACKSLASH>.+    {return UNDEFINED;}
 [ \n\t\r]               { }
 .               {return UNKNOWN;}      
