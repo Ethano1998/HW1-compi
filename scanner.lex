@@ -8,6 +8,7 @@
 %option noyywrap
 
 %x STRING
+%x BACKSLASH
 
 %%
 void           {return VOID; }
@@ -39,7 +40,11 @@ continue      {return CONTINUE;}
 \/\/[^\n\r\t]*           {return COMMENT; }
 [a-zA-Z][a-zA-Z0-9]*     {return ID; }
 
-<STRING>\"
+
+\"                    BEGIN(STRING);
+<STRING>[\n\r]     {output::errorUndefinedEscape("\n");}
+<STRING>[\\n\\r]    {return STRING; }
+<STRING><<EOF>>       { printf("End of file reached\n"); }
 
 [ \n\t\r]               { }
 
