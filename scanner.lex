@@ -34,10 +34,10 @@
 "+"|"-"|"*"|"/"     {return BINOP;}       
 [1-9][0-9]*|"0"     {return NUM;}
 [1-9][0-9]*"b"|"0b" {return NUM_B;}       
-\/\/.*           {return COMMENT; }
+\/\/[^\n\r\t]*           {return COMMENT; }
 [a-zA-Z][a-zA-Z0-9]*     {return ID; }
 
-.               { }
+[ \n\t\r]               { }
 
 %%
 
