@@ -34,9 +34,14 @@ static const std::string token_names[] = {
         "STRING"
 };
 
+char* my_string;
+
 void output::printToken(int lineno, enum tokentype token, const char *value) {
     if (token == COMMENT) {
         std::cout << lineno << " COMMENT //" << std::endl;
+    } else if (token == STRING) {
+        std::cout << lineno << " " << token_names[token] << " " << my_string << std::endl;
+        free(my_string);
     } else {
         std::cout << lineno << " " << token_names[token] << " " << value << std::endl;
     }
@@ -55,4 +60,14 @@ void output::errorUnclosedString() {
 void output::errorUndefinedEscape(const char *sequence) {
     std::cout << "ERROR: Undefined escape sequence " << sequence << std::endl;
     exit(0);
+}
+
+void allocString()
+{
+    my_string = (char*)malloc(1024 * sizeof(char));
+}
+
+void freeString()
+{
+    free(my_string);
 }

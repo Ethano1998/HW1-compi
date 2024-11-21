@@ -1,6 +1,8 @@
 #ifndef TOKENS_HPP
 #define TOKENS_HPP
 
+#include <string.h> 
+
 enum tokentype {
     VOID = 1,
     INT,
@@ -36,7 +38,6 @@ enum tokentype {
 extern int yylineno;
 extern char *yytext;
 extern int yyleng;
-extern char* my_string;
 
 extern int yylex();
 

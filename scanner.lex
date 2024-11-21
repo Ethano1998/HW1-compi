@@ -1,7 +1,9 @@
 %{
 /* Declaration Section */
 #include <stdio.h>
+#include <stdlib.h>
 #include "output.hpp"
+
 %}
 
 %option yylineno
@@ -41,12 +43,15 @@ continue      {return CONTINUE;}
 [a-zA-Z][a-zA-Z0-9]*     {return ID; }
 
 
-\"                    BEGIN(STRING);
-<STRING>[\n\r]     {output::errorUndefinedEscape("\n");}
-<STRING>[\\n\\r]    {return STRING; }
-<STRING><<EOF>>       { printf("End of file reached\n"); }
+\"                    {allocString();
+                        BEGIN(STRING);  }
+<STRING>[^\\\n\r\"]*     {strcat(my_string, yytext);}
+<STRING>\\          {BEGIN(BACKSLASH);  }
+<STRING><<EOF>>       { freeString();
+                    printf("End of file reached\n"); }
+<STRING>\"             {return STRING;
+                        BEGIN(INITIAL);}
 
 [ \n\t\r]               { }
 
 %%
-

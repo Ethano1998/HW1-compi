@@ -2,6 +2,7 @@
 #define OUTPUT_HPP
 
 #include "tokens.hpp"
+extern char* my_string;
 
 namespace output {
 
@@ -16,5 +17,9 @@ namespace output {
 
     void errorUndefinedEscape(const char* sequence);
 }
+
+void allocString();
+    
+void freeString();
 
 #endif //OUTPUT_HPP
