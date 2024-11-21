@@ -11,7 +11,6 @@
 
 %x STRING
 %x BACKSLASH
-%x BACKSLASH
 
 %%
 void           {return VOID; }
@@ -49,11 +48,14 @@ continue      {return CONTINUE;}
 <STRING>[^\\\n\r\"]*     {strcat(my_string, yytext);}
 <STRING>\\          {BEGIN(BACKSLASH);  }
 <STRING><<EOF>>       { freeString();
-                    printf("End of file reached\n"); }
-<STRING>\"             {return STRING;
-                        BEGIN(INITIAL);}
+                        return UNCLOSED; }
+<STRING>\"             {BEGIN(INITIAL);
+                        return STRING;}
+<STRINGS>[\n\r]             {return UNCLOSED;}
 <BACKSLASH>[nrt0\"\\]|x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STRING); return NUM;}
-<BACKSLASH>.+    {return UNDEFINED;}      
+<BACKSLASH>.+    {return UNDEFINED;}
 [ \n\t\r]               { }
+.               {return UNKNOWN;}      
+
 
 %%
