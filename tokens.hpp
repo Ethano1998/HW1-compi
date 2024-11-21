@@ -32,7 +32,10 @@ enum tokentype {
     ID,
     NUM,
     NUM_B,
-    STRING
+    STRING,
+    UNKNOWN,
+    UNCLOSED,
+    UNDEFINED
 };
 
 extern int yylineno;

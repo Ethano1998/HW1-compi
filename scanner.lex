@@ -48,10 +48,14 @@ continue      {return CONTINUE;}
 <STR>[^\\\n\r\"]*     {strcat(my_string, yytext);}
 <STR>\\          {BEGIN(BACKSLASH);  }
 <STR><<EOF>>       { freeString();
-                    printf("End of file reached\n"); }
+                        return UNCLOSED; }
 <STR>\"             {BEGIN(INITIAL);
                         return STRING;}
-
+<STR>[\n\r]             {return UNCLOSED;}
+<BACKSLASH>[nrt0\"\\]|x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STR); return NUM;}
+<BACKSLASH>.+    {return UNDEFINED;}
 [ \n\t\r]               { }
+.               {return UNKNOWN;}      
+
 
 %%
