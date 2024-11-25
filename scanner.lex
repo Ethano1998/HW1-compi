@@ -46,16 +46,30 @@ continue      {return CONTINUE;}
 \"                    {allocString();
                         BEGIN(STR);  }
 <STR>[^\\\n\r\"]*     {strcat(my_string, yytext);}
-<STR>\\          {BEGIN(BACKSLASH); 
-                        strcat(my_string, yytext);}
+<STR>\\          {BEGIN(BACKSLASH); }
 <STR><<EOF>>       { freeString();
                         return UNCLOSED; }
 <STR>\"             {BEGIN(INITIAL);
                         return STRING;}
 <STR>[\n\r]             {return UNCLOSED;}
-<BACKSLASH>[nrt0\"\\]|x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STR); 
-                                                            strcat(my_string, yytext);}
-<BACKSLASH>x[^][]*       {return UNDEFINED;}
+<BACKSLASH>x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STR); 
+                                                unsigned int val;
+                                                sscanf(yytext + 1, "%2x", &val); 
+                                                char hexChar[2] = { (char)val, '\0' };
+                                                strcat(my_string, hexChar);}
+<BACKSLASH>n                                  {BEGIN(STR); 
+                                                strcat(my_string,"\n");}  
+<BACKSLASH>r                                  {BEGIN(STR); 
+                                                strcat(my_string,"\r");}
+<BACKSLASH>t                                 {BEGIN(STR); 
+                                                strcat(my_string,"\t");}
+<BACKSLASH>0                                  {BEGIN(STR); 
+                                                strcat(my_string,"\0");}
+<BACKSLASH>\"                                  {BEGIN(STR); 
+                                                strcat(my_string,"\"");} 
+<BACKSLASH>\\                                  {BEGIN(STR); 
+                                                strcat(my_string,"\\");}                                                         
+<BACKSLASH>x[^\"]?[^\"]?       {return UNDEFINED;}
 <BACKSLASH>.    {return UNDEFINED;}
 [ \n\t\r]               { }
 .               {return UNKNOWN;}      
