@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include "output.hpp"
 
+int i;
+
 %}
 
 %option yylineno
@@ -11,7 +13,6 @@
 
 %x STR
 %x BACKSLASH
-%x TERM
 
 %%
 void           {return VOID; }
@@ -44,39 +45,38 @@ continue      {return CONTINUE;}
 [a-zA-Z][a-zA-Z0-9]*     {return ID; }
 
 
-\"                    {allocString();
+\"                    {allocString(); i = 0;
                         BEGIN(STR);  }
-<STR>[^\\\n\r\"]*     {strcat(my_string, yytext);}
+<STR>[^\\\n\r\"]     {my_string[i]=yytext[0];
+                                i=i+1;}
 <STR>\\          {BEGIN(BACKSLASH); }
 <STR><<EOF>>       { freeString();
-                        return UNCLOSED; }
+                       output::errorUnclosedString(); }
 <STR>\"             {BEGIN(INITIAL);
                         return STRING;}
-<STR>[\n\r]             {return UNCLOSED;}
+<STR>[\n\r]             {output::errorUnclosedString();}
 <BACKSLASH>x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STR); 
                                                 unsigned int val;
                                                 sscanf(yytext + 1, "%2x", &val); 
-                                                char hexChar[2] = { (char)val, '\0' };
-                                                strcat(my_string, hexChar);}
+                                                char hexChar = (char)val;
+                                                my_string[i] = hexChar;
+                                                          i = i + 1;   }
 <BACKSLASH>n                                  {BEGIN(STR); 
-                                                strcat(my_string,"\n");}  
+                                                my_string[i] = '\n';  i = i + 1;}  
 <BACKSLASH>r                                  {BEGIN(STR); 
-                                                strcat(my_string,"\r");}
+                                                 my_string[i] = '\r'; i = i + 1;}
 <BACKSLASH>t                                 {BEGIN(STR); 
-                                                strcat(my_string,"\t");}
-<BACKSLASH>0                                  {BEGIN(TERM); 
-                                                return STRING;}
+                                                 my_string[i] = '\t'; i = i + 1;}
+<BACKSLASH>0                                  {BEGIN(STR); 
+                                                 my_string[i] = '\0'; i = i + 1;}
 <BACKSLASH>\"                                  {BEGIN(STR); 
-                                                strcat(my_string,"\"");} 
+                                                 my_string[i] = '\"'; i = i + 1;}
 <BACKSLASH>\\                                  {BEGIN(STR); 
-                                                strcat(my_string,"\\");}                                                         
-<BACKSLASH>x[^\"]?[^\"]?       {return UNDEFINED;}
-<BACKSLASH>.    {return UNDEFINED;}
-
-<TERM>[^\"]              { }
-<TERM>\"                {BEGIN(INITIAL);}
+                                                 my_string[i] = '\\'; i = i + 1;}                                                         
+<BACKSLASH>x[^\"]?[^\"]?       {output::errorUndefinedEscape(yytext);}
+<BACKSLASH>.    {output::errorUndefinedEscape(yytext);}
 [ \n\t\r]               { }
-.               {return UNKNOWN;}      
+.               {output::errorUnknownChar(yytext[0]);}      
 
 
 %%
