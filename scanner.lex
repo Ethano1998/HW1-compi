@@ -52,7 +52,7 @@ continue      {return CONTINUE;}
 <STR>\\          {BEGIN(BACKSLASH); }
 <STR><<EOF>>       { freeString();
                        output::errorUnclosedString(); }
-<STR>\"             {BEGIN(INITIAL);
+<STR>\"             {BEGIN(INITIAL); my_string[i] = '\0'; i = i + 1;
                         return STRING;}
 <STR>[\n\r]             {output::errorUnclosedString();}
 <BACKSLASH>x[2-6][0-9A-Fa-f]|x7[0-9A-Ea-e]   {BEGIN(STR); 
