@@ -4,9 +4,6 @@
 #include "tokens.hpp"
 extern char* my_string;
 
-
-void checkerror(enum tokentype token,const char *value);
-
 namespace output {
 
     /* prints the token with the given line number, type, and value. For COMMENT value is ignored */

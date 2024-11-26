@@ -11,6 +11,7 @@
 
 %x STR
 %x BACKSLASH
+%x TERM
 
 %%
 void           {return VOID; }
@@ -63,14 +64,17 @@ continue      {return CONTINUE;}
                                                 strcat(my_string,"\r");}
 <BACKSLASH>t                                 {BEGIN(STR); 
                                                 strcat(my_string,"\t");}
-<BACKSLASH>0                                  {BEGIN(STR); 
-                                                strcat(my_string,"\0");}
+<BACKSLASH>0                                  {BEGIN(TERM); 
+                                                return STRING;}
 <BACKSLASH>\"                                  {BEGIN(STR); 
                                                 strcat(my_string,"\"");} 
 <BACKSLASH>\\                                  {BEGIN(STR); 
                                                 strcat(my_string,"\\");}                                                         
 <BACKSLASH>x[^\"]?[^\"]?       {return UNDEFINED;}
 <BACKSLASH>.    {return UNDEFINED;}
+
+<TERM>[^\"]              { }
+<TERM>\"                {BEGIN(INITIAL);}
 [ \n\t\r]               { }
 .               {return UNKNOWN;}      
 
